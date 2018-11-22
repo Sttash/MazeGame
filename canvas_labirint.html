@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Maze game - HTML5 Canvas</title>
+	<style>
+		canvas {
+			border: 6px double black;
+			background: white;
+		}
+
+		img {
+			display: none;
+		}
+
+		button {
+			padding: 8px;
+		}
+	</style>
+	<script src="maze.js"></script>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<div>
+		<button onclick="loadHard()">Сложный лабиринт</button>
+		<button onclick="loadEasy()">Простой лабиринт</button>
+	</div>
+	
+	<img id="face" src="face.png">
+</body>
+</html>
