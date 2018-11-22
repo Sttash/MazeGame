@@ -5,10 +5,16 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"type": "node",
+			"type": "chrome",
 			"request": "launch",
 			"name": "Запустить программу",
-			"program": "${workspaceFolder}/maze.js"
+			"file": "${workspaceFolder}/canvas_labirint.html"
+		},
+		{
+			"name": "Launch localhost",
+			"type": "chrome",
+			"request": "launch",
+			"url": "http://localhost/MazeGame/canvas_labirint.html"
 		}
 	]
 }
