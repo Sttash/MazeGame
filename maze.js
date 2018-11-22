@@ -46,7 +46,6 @@ function drawMaze(mazeFile, startingX, startingY) {
 
     // Рисуем лабиринт
     context.drawImage(imgMaze, 0,0);
-    //imgMaze.appendChild(canvas);
     // Рисуем значок
     iconX = startingX;
     iconY = startingY;
@@ -58,7 +57,6 @@ function drawMaze(mazeFile, startingX, startingY) {
     // Рисуем следующий кадр через 10 миллисекунд
     timer = setTimeout(drawFrame, 10);
   };
-  //imgMaze.crossOrigin = "Anonymous";
   imgMaze.src = mazeFile;
 }
 
