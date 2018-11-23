@@ -27,9 +27,11 @@
 			padding: 8px;
 		}
 	</style>
-	<script src="maze.js"></script>
 </head>
 <body>
+	<div>
+		<label name="timer" id="timer">0:00</label>
+	</div>
 	<canvas id="canvas"></canvas>
 	<div>
 		<button onclick="loadHard()">Сложный лабиринт</button>
@@ -37,5 +39,6 @@
 	</div>
 	
 	<img id="face" src="face.png">
+	<script src="maze.js"></script>
 </body>
 </html>
