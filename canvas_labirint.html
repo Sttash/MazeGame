@@ -26,11 +26,22 @@
 		button {
 			padding: 8px;
 		}
+		
+		span {
+			margin-right: 5px;
+		}
+
+		#timer {
+			margin-right: 50px;
+		}
 	</style>
 </head>
 <body>
 	<div>
+		<span id="timeLabel">Your time:</span>
 		<label name="timer" id="timer">0:00</label>
+		<span id="btLabel">Best time:</span>
+		<label name="bestTime" id="bt" onclick="clearBT()">--:--</label>
 	</div>
 	<canvas id="canvas"></canvas>
 	<div>

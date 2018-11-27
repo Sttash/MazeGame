@@ -11,7 +11,10 @@ var canvas,
     dy = 0,
 
 // коды клавиш (wasd и стрелки)
-    movementKeys = [ 38, 87, 40, 83, 37, 65, 39, 68 ];
+    movementKeys = [ 38, 87, 40, 83, 37, 65, 39, 68 ],
+    
+// label, содержащий лучшее время
+    btText = document.getElementById("bt");
 
 // стартовые операции
 window.onload = function() {
@@ -20,7 +23,11 @@ window.onload = function() {
   context = canvas.getContext("2d");
 
   // Рисуем фон лабиринта
-  drawMaze("maze.png", 268, 5);
+  loadHard();
+
+  // Получение лучшего результата
+  btText.innerHTML = 
+    getBestTime(mazeLoaded);
 
   // При нажатии клавиши вызываем функцию processKey(e) для перемещения
   // при отпускании вызывается processUpKey(e) для остановки значка
@@ -31,6 +38,7 @@ window.onload = function() {
 // Таймеры и индикаторы состояний 
 var timer,
     timerClock,
+    mazeLoaded,
     isClockStarted = false,
     isFinished = false;
 
@@ -156,6 +164,7 @@ function drawFrame() {
       alert("Ты победил!\nТвоё время: " + timerText.innerHTML);
       resetTimer();
       isFinished = true;
+      setBestTime(mazeLoaded, minTime * 60 + secTime);
       return;
     }
   }
@@ -192,9 +201,29 @@ function resetTimer() {
   clearInterval(timerClock);
 }
 
-// загрузка лёгкото лабиринта
+function displayBestTime(maze) {
+  btText.innerHTML = getBestTime(maze);
+}
+
+function getBestTime(maze) {
+  let bTime = localStorage.getItem(maze);
+  return bTime/* `${Math.abs(bTime / 60)}:${bTime % 60}` */;
+}
+
+function setBestTime(maze, time) {
+  localStorage.setItem(maze, time);
+}
+
+function clearBT() {
+  localStorage.clear();
+  btText.innerHTML = "-:--";
+}
+
+// загрузка лёгкого лабиринта
 function loadEasy() {
   drawMaze('easy_maze.png', 5, 5);
+  mazeLoaded = "easy";
+  displayBestTime("easy");
   isFinished = false;
   resetTimer();
 }
@@ -202,6 +231,8 @@ function loadEasy() {
 // загрузка сложного лабиринта
 function loadHard() {
   drawMaze('maze.png', 268, 5);
+  mazeLoaded = "hard";
+  displayBestTime("hard");
   isFinished = false;
   resetTimer();
 }
