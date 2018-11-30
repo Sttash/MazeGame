@@ -16,6 +16,11 @@
 			display: none;
 		}
 
+		img#restart {
+			display: block;
+			margin-right: 25px;
+		}
+
 		div {
 			margin-top: 5px;
 			display: flex;
@@ -32,7 +37,7 @@
 		}
 
 		#timer {
-			margin-right: 50px;
+			margin-right: 25px;
 		}
 	</style>
 </head>
@@ -40,8 +45,9 @@
 	<div>
 		<span id="timeLabel">Your time:</span>
 		<label name="timer" id="timer">0:00</label>
+		<img id="restart" src="restart.jpg" onclick="restart()" title="Restart">
 		<span id="btLabel">Best time:</span>
-		<label name="bestTime" id="bt" onclick="clearBT()">--:--</label>
+		<label name="bestTime" id="bt" onclick="clearBT()" title="Click to clear">--:--</label>
 	</div>
 	<canvas id="canvas"></canvas>
 	<div>
