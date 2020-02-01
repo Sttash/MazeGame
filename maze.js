@@ -16,7 +16,7 @@ var canvas,
 // label, содержащий лучшее время
     btText = document.getElementById("bt");
 
-// стартовые операции
+// Стартовые операции
 window.onload = function() {
   // Подготавливаем холст
   canvas = document.getElementById("canvas");
@@ -26,8 +26,7 @@ window.onload = function() {
   loadHard();
 
   // Получение лучшего результата
-  btText.innerHTML = 
-    getBestTime(mazeLoaded);
+  displayBestTime(mazeLoaded);
 
   // При нажатии клавиши вызываем функцию processKey(e) для перемещения
   // при отпускании вызывается processUpKey(e) для остановки значка
@@ -38,7 +37,7 @@ window.onload = function() {
 // Таймеры и индикаторы состояний 
 var timer,
     timerClock,
-    mazeLoaded,
+    mazeLoaded = "hard",
     isClockStarted = false,
     isFinished = false;
 
@@ -79,14 +78,14 @@ function drawMaze(mazeFile, startingX, startingY) {
 // Обработка нажатия клавиш
 function processKey(e) {
   // Если значок находится в движении, останавливаем его
-  //dx = 0;
-  //dy = 0;
+  dx = 0;
+  dy = 0;
 
-  // Таймер запускается только после перемещения значка
+  // Отсчёт времени запускается только после перемещения значка
   if (isClockStarted == false && isFinished == false
     && movementKeys.includes(e.keyCode)) {
-    isClockStarted = true;
-    timerClock = setInterval(tickTime, 1000);
+      isClockStarted = true;
+      timerClock = setInterval(tickTime, 1000);
   }
 
   // Если нажата стрелка вверх, начинаем двигаться вверх
@@ -105,7 +104,7 @@ function processUpKey() {
   dy = 0;
 }
 
-// проверка столкновения со стеной
+// Проверка столкновения со стеной
 function checkForCollision() {
   // Перебираем все пикселы и инвертируем их цвет
   var imgData = context.getImageData(iconX-1, iconY-1, 15+2, 15+2);
@@ -161,10 +160,22 @@ function drawFrame() {
     // Проверяем дошел ли пользователь до финиша.
 	  // Если дошел, то выводим сообщение
     if (iconY > (canvas.height - 17)) {
-      alert("Ты победил!\nТвоё время: " + timerText.innerHTML);
-      resetTimer();
+      // Вывод разного сообщения в зависимости от времени прохождения
+      switch (compareWithBestTime([min, sec])) {
+        case "equal":
+          alert("Твоё время: " + timerText.innerHTML + "\nРекорд повторён!");
+          break;
+        case "less":
+          setBestTime(mazeLoaded, [min, sec]);
+          alert("Твоё время: " + timerText.innerHTML + "\nНовый рекорд!");
+          break;
+        case "more":
+          alert("Твоё время: " + timerText.innerHTML + "\nРекорд не побит!");
+          break;
+      }
       isFinished = true;
-      setBestTime(mazeLoaded, minTime * 60 + secTime);
+      resetTimer();
+      displayBestTime(mazeLoaded);
       return;
     }
   }
@@ -173,53 +184,91 @@ function drawFrame() {
   timer = setTimeout(drawFrame, 10);
 }
 
-var minTime = 0, // минуты
-    secTime = 1; // секунды
+var min = 0, // минуты
+    sec = 0; // секунды
 var timerText = document.getElementById("timer"); // label для отображения таймера
 
-// обновление значения таймера (раз в секунду)
+// Обновление значения таймера (раз в секунду)
 function tickTime() {
-  // добавление "0" перед значением секунды, если оно < 10
-  timerText.innerHTML =
-    (secTime < 10)
-    ? `${minTime}:0${secTime++}`
-    : `${minTime}:${secTime++}`;
-  // увеличение значения минут на 1, если дошло до 60 секунд
+  ++sec;
+  // Увеличение значения минут на 1, если дошло до 60 секунд
   // и сброс значения минут
-  if (secTime == 60) {
-    ++minTime;
-    secTime = 0;
+  if (sec == 60) {
+    ++min;
+    sec = 0;
   }
+  // Вывод значений времени на label
+  timerText.innerHTML =
+    (sec < 10)
+    ? `${min}:0${sec}`
+    : `${min}:${sec}`;  
 }
 
-// сброс значения таймера
+// Сброс значения таймера
 function resetTimer() {
   timerText.innerHTML = "0:00";
-  minTime = 0;
-  secTime = 1;
+  min = 0;
+  sec = 0;
   isClockStarted = false;
   clearInterval(timerClock);
 }
 
-function displayBestTime(maze) {
-  btText.innerHTML = getBestTime(maze);
-}
-
+// Получение значения рекордного времени из localStorage
 function getBestTime(maze) {
-  let bTime = localStorage.getItem(maze);
-  return bTime/* `${Math.abs(bTime / 60)}:${bTime % 60}` */;
+  let bTime = (localStorage.getItem(maze) === null)
+  ? [0, 0]
+  : localStorage.getItem(maze).split(",");
+  return bTime;
 }
 
+// Сравнение времени прохождения с рекордом
+function compareWithBestTime(time) {
+  let bTime = getBestTime(mazeLoaded);
+  // Перевод содержимого массива из строк в числа
+  bTime.forEach(function(item, index, array) {
+    array[index] = parseInt(item, 10);
+  });
+
+  // Нет сохранённого рекорда
+  if (bTime[0] == 0 && bTime[1] == 0) {
+    return "less";
+  }
+  else {
+    // Время прохождения равно рекорду
+    if ((time[0] == bTime[0]) &&
+        (time[1] == bTime[1])) {
+          return "equal";
+        }
+    // Время прохождения меньше, чем рекорд (новый рекорд)
+    if ((time[0] <= bTime[0]) &&
+        (time[1] <= bTime[1])) {
+          return "less";
+        }
+    // Время прохождения больше, чем рекорд
+    else return "more";
+  }
+}
+
+// Отображение рекорда на label
+function displayBestTime(maze) {
+  let time = getBestTime(maze);
+  btText.innerHTML = (time[1] < 10)
+  ? `${time[0]}:0${time[1]}`
+  : `${time[0]}:${time[1]}`;  
+}
+
+// Сохранение рекорда в localStorage
 function setBestTime(maze, time) {
   localStorage.setItem(maze, time);
 }
 
+// Очистка localStorage
 function clearBT() {
   localStorage.clear();
-  btText.innerHTML = "-:--";
+  btText.innerHTML = "--:--";
 }
 
-// загрузка лёгкого лабиринта
+// Загрузка лёгкого лабиринта
 function loadEasy() {
   drawMaze('easy_maze.png', 5, 5);
   mazeLoaded = "easy";
@@ -228,11 +277,23 @@ function loadEasy() {
   resetTimer();
 }
 
-// загрузка сложного лабиринта
+// Загрузка сложного лабиринта
 function loadHard() {
   drawMaze('maze.png', 268, 5);
   mazeLoaded = "hard";
   displayBestTime("hard");
   isFinished = false;
   resetTimer();
+}
+
+// Рестарт уровня (при нажатии на кнопку рестарта)
+function restart() {
+  switch (mazeLoaded) {
+    case "hard":
+      loadHard();
+      break;
+    case "easy":
+      loadEasy();
+      break;
+  }
 }
